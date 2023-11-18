@@ -47,13 +47,26 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
   origin,
   request,
 }) => {
-  const res = await talk('Write a good quote for DeFi');
-  const message: string = res?.message.content ?? 'Error';
-  console.log(res);
+  // console.log(res);
   switch (request.method) {
     case 'hello':
       // console.log(res);
-
+      // eslint-disable-next-line no-case-declarations
+      const prompt: string = await snap.request({
+        method: 'snap_dialog',
+        params: {
+          type: 'prompt',
+          content: panel([
+            // heading('What do you want to ask Fren?'),
+            text('Please enter the crypto concept you want'),
+          ]),
+          placeholder: 'AMMs, Oracles etc',
+        },
+      });
+      const result = await talk(
+        `You are a crypto expert/teacher. Please explain the DeFi/crypto concept: ${prompt}. Less than 30 words`,
+      );
+      const message: string = result?.message.content ?? 'Error';
       return snap.request({
         method: 'snap_dialog',
         params: {

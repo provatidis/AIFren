@@ -192,9 +192,9 @@ const Index = () => {
         )}
         <Card
           content={{
-            title: 'Get DeFi quote',
+            title: 'Explain a crypto concept',
             description:
-              'Display a random DeFi quote within a confirmation screen in MetaMask.',
+              'Enter a crypto concept you want, and AI Fren will explain it.',
             button: (
               <SendHelloButton
                 onClick={handleSendHelloClick}
