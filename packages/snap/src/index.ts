@@ -1,32 +1,83 @@
 import type { OnRpcRequestHandler } from '@metamask/snaps-types';
-import { panel, text } from '@metamask/snaps-ui';
+import { panel, text } from '@metamask/snaps-ui'; // Get API key from environment variable
+import OpenAI from 'openai';
+
+const apiKey = '';
+// import 'dotenv/config';
+
+// const apiKey: string = process.env.REACT_APP_OPENAI_API_KEY ?? 'Error';
+// const apiKey = snap;
+
+const openai = new OpenAI({ apiKey });
 
 /**
- * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
  *
- * @param args - The request handler args as object.
- * @param args.origin - The origin of the request, e.g., the website that
- * invoked the snap.
- * @param args.request - A validated JSON-RPC request object.
- * @returns The result of `snap_dialog`.
- * @throws If the request method is not valid for this snap.
+ * @param message
  */
-export const onRpcRequest: OnRpcRequestHandler = ({ origin, request }) => {
+async function talk(message: string) {
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: 'system', content: message }],
+    model: 'gpt-3.5-turbo',
+  });
+
+  // return JSON.stringify(completion.choices[0]);
+  return completion.choices[0];
+}
+
+/**
+ *
+ * @param x
+ * @param apiKey
+ * @param address
+ * @param x.origin
+ * @param x.request
+ */
+// const setSnapState = async (apiKey: string) => {
+//   return snap.request({
+//     method: 'snap_manageState',
+//     params: {
+//       operation: 'update',
+//       newState: {
+//         apiKey,
+//       },
+//     },
+//   });
+// };
+export const onRpcRequest: OnRpcRequestHandler = async ({
+  origin,
+  request,
+}) => {
+  const res = await talk('Write a good quote for DeFi');
+  const message: string = res?.message.content ?? 'Error';
+  console.log(res);
   switch (request.method) {
     case 'hello':
+      // console.log(res);
+
       return snap.request({
         method: 'snap_dialog',
         params: {
           type: 'confirmation',
           content: panel([
-            text(`Hello, **${origin}**!`),
-            text('This custom confirmation is just for display purposes.'),
-            text(
-              'But you can edit the snap source code to make it do something, if you want to!',
-            ),
+            text(`**${message}**`), // Displaying the response from OpenAI
+
+            // text('This custom confirmation is just for display purposes.'),
+            // text(
+            //   'But you can edit the snap source code to make it do something, if you want to!',
+            // ),
           ]),
         },
       });
+    // case 'set_snap_state':
+    //   if (
+    //     request.params &&
+    //     'apiKey' in request.params &&
+    //     typeof request.params.apiKey === 'string'
+    //   ) {
+    //     await setSnapState(request.params.apiKey);
+    //     return true;
+    //   }
+    // eslint-disable-next-line no-fallthrough
     default:
       throw new Error('Method not found.');
   }

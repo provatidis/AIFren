@@ -64,4 +64,11 @@ export const sendHello = async () => {
   });
 };
 
+export const sendApikey = async () => {
+  await window.ethereum.request({
+    method: 'wallet_invokeSnap',
+    params: { snapId: defaultSnapOrigin, request: { method: 'hello' } },
+  });
+};
+
 export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
