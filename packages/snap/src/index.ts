@@ -70,7 +70,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       return snap.request({
         method: 'snap_dialog',
         params: {
-          type: 'confirmation',
+          type: 'alert',
           content: panel([
             text(`**${message}**`), // Displaying the response from OpenAI
 
